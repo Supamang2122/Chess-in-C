@@ -2,11 +2,15 @@
 > ~~Nearly~~ fully functional chess created in C ♟
 
 ## In general
-Using my lack of knowledge and severe brain damage I created 2 player chess that is playable via terminal!
+Using my lack of knowledge and severe brain damage, I created 2 player chess that is playable via terminal!
 
-Every round each player is asked to write 2 coordinates as an input which represents respectively position of piece that they want to move and its destination: `"a1 h8"`.
+Every round, each player is asked to write 2 coordinates as an input in the form `"src dest"`. 
 
-User input is being analyzed and program decides if it can make the move. After each move a new state of the chessboard is displayed. In case of illegal move/input program asks again for coordinates until it is legal.
+The `src` field represents the original coordinate of the piece and the `dest` field represents the destination coordinate for that same piece. 
+Example input: `"a1 h8"`.
+
+
+User input is analyzed and program determines if the move is valid. After each move a new state of the chessboard is displayed. In case of an illegal move/input, the program will ask again for coordinates until a legal move is entered.
 
 ## How it works?
 
