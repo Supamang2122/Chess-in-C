@@ -10,7 +10,7 @@ int main() {
     struct game* chess;
 
     if(initiateGame(&chess))
-        failedToAllocateMemory
+        FAILED_TO_ALLOCATE_MEMORY
 
     printf("CHESS IN C (C stands for cancer edition) -> version 0.1.1a\n\n");
 
@@ -38,38 +38,37 @@ int main() {
 
         errCode = userCommunication(chess, color);
 
-        if(errCode == userSuccessfulMove || errCode == kingInCheck || errCode == checkmate || errCode == stalemate)
+        if(errCode == USER_SUCCESSFUL_MOVE || errCode == KING_IS_IN_CHECK || errCode == CHECKMATE || errCode == STALEMATE)
             displayGame(chess);
-        else if(errCode == userIncorrectInput)
-            incorrectInput
-        else if(errCode == userIncorrectInputData)
+        else if(errCode == USER_INCORRECT_INPUT)
+            INCORRECT_INPUT
+        else if(errCode == USER_INCORRECT_INPUT_DATA)
             printf("\nIncorrect position data!\n\n");
-        else if(errCode == pieceDoesntExist)
+        else if(errCode == PIECE_DOES_NOT_EXIST)
             printf("\nThere is no piece at given coordinates!\n\n");
-        else if(errCode == pieceDoesntBelongToUser)
+        else if(errCode == PIECE_DOES_NOT_BELONG_TO_USER)
             printf("\nPiece at given coordinates doesn't belong to %s!\n\n", (color == WHITE) ? "white" : "black");
-        else if(errCode == illegalMove)
+        else if(errCode == MOVE_IS_ILLEGAL)
             printf("\nIllegal move!\n\n");
 
-        if(errCode == kingInCheck)
+        if(errCode == KING_IS_IN_CHECK)
             printf("%s'S KING IN CHECK!\n\n", (color == WHITE) ? "BLACK" : "WHITE");
 
-        if(errCode == userSuccessfulMove || errCode == kingInCheck)
+        if(errCode == USER_SUCCESSFUL_MOVE || errCode == KING_IS_IN_CHECK)
             color = (color == WHITE) ? BLACK : WHITE;
 
         if(color == BLACK)
             chess -> currentRoundNumber++;
+    } while(errCode != GAME_END && errCode != CHECKMATE && errCode != STALEMATE);
 
-        if(errCode == checkmate)
-            printf("CHECKMATE!\n");
-
-        if(errCode == stalemate)
-            printf("STALEMATE!\n");
-    } while(errCode != gameEnd && errCode != checkmate && errCode != stalemate);
+    if(errCode == CHECKMATE)
+        printf("CHECKMATE!\n");
+    else if(errCode == STALEMATE)
+        printf("STALEMATE!\n");
 
     printf("\nTHANKS FOR PLAYING! <3");
 
-    free(chess);
+    destroyGame(chess);
 
     return 0;
 }

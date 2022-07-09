@@ -10,30 +10,30 @@
 
 /* Main error codes: */
 
-#define failedToAllocateMemory { printf("CRITICAL ERROR: Failed to allocate memory"); return 1; }
-#define incorrectInput { free(chess); printf("CRITICAL ERROR: Incorrect input"); return 2; }
+#define FAILED_TO_ALLOCATE_MEMORY { printf("CRITICAL ERROR: Failed to allocate memory"); return 1; }
+#define INCORRECT_INPUT { destroyGame(chess); printf("CRITICAL ERROR: Incorrect input"); return 2; }
 
 /* Core function's error codes: */
 
-#define FunctionSuccess return 0;
-#define FunctionInputError return -1;
-#define FunctionDataError return -2;
-#define MemoryCriticalError { destroyGame(*data); return -3; }
-#define IllegalMove return -4;
+#define FUNCTION_SUCCESS return 0;
+#define FUNCTION_INPUT_ERROR return -1;
+#define FUNCTION_DATA_ERROR return -2;
+#define MEMORY_CRITICAL_ERROR { destroyGame(*data); return -3; }
+#define ILLEGAL_MOVE return -4;
 
 /* User communication error codes: */
 
-#define howItEvenHappened -2137
-#define gameEnd -1
-#define userSuccessfulMove 0
-#define userIncorrectInput 1
-#define userIncorrectInputData 2
-#define pieceDoesntExist 3
-#define pieceDoesntBelongToUser 4
-#define illegalMove 5
-#define kingInCheck 6
-#define stalemate 7
-#define checkmate 8
+#define HOW_IT_EVEN_HAPPENED -2137
+#define GAME_END -1
+#define USER_SUCCESSFUL_MOVE 0
+#define USER_INCORRECT_INPUT 1
+#define USER_INCORRECT_INPUT_DATA 2
+#define PIECE_DOES_NOT_EXIST 3
+#define PIECE_DOES_NOT_BELONG_TO_USER 4
+#define MOVE_IS_ILLEGAL 5
+#define KING_IS_IN_CHECK 6
+#define STALEMATE 7
+#define CHECKMATE 8
 
 /* Declaration of essential variables: */
 
