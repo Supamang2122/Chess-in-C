@@ -551,25 +551,25 @@ int validateKing(struct game* data, struct coordinates newPosition)
         {
             struct coordinates currentPosition = data -> currentPiece -> position;
 
-            if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+            if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
             {
                 if(piece -> position.x > data -> currentPiece -> position.x)
                 {
                     currentPosition.x++;
-                    if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                    if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
                     {
                         currentPosition.x++;
-                        if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                        if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
                             FUNCTION_SUCCESS
                     }
                 }
                 else if(piece -> position.x < data -> currentPiece -> position.x)
                 {
                     currentPosition.x--;
-                    if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                    if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
                     {
                         currentPosition.x--;
-                        if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                        if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
                             FUNCTION_SUCCESS
                     }
                 }
@@ -645,6 +645,16 @@ int validateKingsCheckHazard(struct game* data, struct coordinates newPosition)
     struct piece* piece = data -> currentPiece;
     struct coordinates currentPosition = piece -> position;
     struct piece* enemy = searchForPiece(data, newPosition);
+
+    if(enemy)
+        if(piece -> color == enemy -> color && piece -> type == KING && enemy -> type == ROOK && piece -> additional.canCastle && enemy -> additional.canCastle)
+        {
+            if(enemy -> position.x > piece -> position.x)
+                newPosition.x--;
+            else if(enemy -> position.x < piece -> position.x)
+                newPosition.x += 2;
+            enemy = searchForPiece(data, newPosition);
+        }
 
     int x = newPosition.x - 97;
     int y = 8 - newPosition.y;
