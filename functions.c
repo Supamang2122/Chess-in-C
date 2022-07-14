@@ -3,29 +3,29 @@
 int initiateGame(struct game** data)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     *data = (struct game*) malloc(sizeof(struct game));
     if(!(*data))
-        MemoryCriticalError
+        MEMORY_CRITICAL_ERROR
 
     struct piece*** board = (struct piece***) calloc(9, sizeof(void*));
     (*data) -> board = board;
     if(!board)
-        MemoryCriticalError
+        MEMORY_CRITICAL_ERROR
 
     for(int i = 0; i < 8; i++)
     {
         *(board + i) = (struct piece**) calloc(8, sizeof(void*));
         if(!(*(board + i)))
-            MemoryCriticalError
+            MEMORY_CRITICAL_ERROR
 
         if(i < 2 || i > 5)
             for(int j = 0; j < 8; j++)
             {
                 *(*(board + i) + j) = (struct piece*) malloc(sizeof(struct piece));
                 if(!(*(*(board + i) + j)))
-                    MemoryCriticalError
+                    MEMORY_CRITICAL_ERROR
             }
     }
 
@@ -77,7 +77,7 @@ int initiateGame(struct game** data)
     (*data) -> currentRoundNumber = 1;
     (*data) -> materialAdvantage = 0;
 
-    FunctionSuccess
+    FUNCTION_SUCCESS
 }
 
 void displayGame(struct game* data)
@@ -216,28 +216,28 @@ void destroyGame(struct game* data)
 int move(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     enum pieceType type = data -> currentPiece -> type;
     struct piece* piece = data -> currentPiece;
 
     if(validateByType(type)(data, newPosition))
-        IllegalMove
+        ILLEGAL_MOVE
 
     if(validateInterruption(data, newPosition))
-        IllegalMove
+        ILLEGAL_MOVE
 
     if(validateKingsCheckHazard(data, newPosition))
-        IllegalMove
+        ILLEGAL_MOVE
 
     if(piece -> type == KING)
     {
@@ -277,7 +277,7 @@ int move(struct game* data, struct coordinates newPosition)
 
                 piece -> additional.canCastle = 0;
 
-                FunctionSuccess
+                FUNCTION_SUCCESS
             }
     }
 
@@ -347,7 +347,7 @@ int move(struct game* data, struct coordinates newPosition)
     else if(type == ROOK || type == KING)
         piece -> additional.canCastle = 0;
 
-    FunctionSuccess
+    FUNCTION_SUCCESS
 }
 
 int (*validateByType(enum pieceType type))(struct game*, struct coordinates)
@@ -367,16 +367,16 @@ int (*validateByType(enum pieceType type))(struct game*, struct coordinates)
 int validatePawn(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     struct piece* piece = data -> currentPiece;
 
@@ -385,20 +385,20 @@ int validatePawn(struct game* data, struct coordinates newPosition)
         if(piece -> position.x == newPosition.x && !searchForPiece(data, newPosition))
         {
             if(piece -> position.y + 1 == newPosition.y)
-                FunctionSuccess
+                FUNCTION_SUCCESS
             else if(piece -> position.y + 2 == newPosition.y && piece -> additional.firstMove == 2)
-                FunctionSuccess
+                FUNCTION_SUCCESS
         }
         else if((piece -> position.x - 1 == newPosition.x || piece -> position.x + 1 == newPosition.x) && piece -> position.y + 1 == newPosition.y)
         {
             if(searchForPiece(data, newPosition))
                 if(isEnemy(data, newPosition))
-                    FunctionSuccess
+                    FUNCTION_SUCCESS
             struct coordinates enPassantCoordinates = {.x = newPosition.x, .y = newPosition.y - 1};
             struct piece* enemy = searchForPiece(data, enPassantCoordinates);
             if(enemy)
                 if(isEnemy(data, enPassantCoordinates) && enemy -> type == PAWN && enemy -> additional.firstMove == 1)
-                    FunctionSuccess
+                    FUNCTION_SUCCESS
         }
     }
     else if(piece -> color == BLACK)
@@ -406,143 +406,143 @@ int validatePawn(struct game* data, struct coordinates newPosition)
         if(piece -> position.x == newPosition.x && !searchForPiece(data, newPosition))
         {
             if(piece -> position.y - 1 == newPosition.y)
-                FunctionSuccess
+                FUNCTION_SUCCESS
             else if(piece -> position.y - 2 == newPosition.y && piece -> additional.firstMove == 2)
-                FunctionSuccess
+                FUNCTION_SUCCESS
         }
         else if((piece -> position.x - 1 == newPosition.x || piece -> position.x + 1 == newPosition.x) && piece -> position.y - 1 == newPosition.y)
         {
             if(searchForPiece(data, newPosition))
                 if(isEnemy(data, newPosition))
-                    FunctionSuccess
+                    FUNCTION_SUCCESS
             struct coordinates enPassantCoordinates = {.x = newPosition.x, .y = newPosition.y + 1};
             struct piece* enemy = searchForPiece(data, enPassantCoordinates);
             if(enemy)
                 if(isEnemy(data, enPassantCoordinates) && enemy -> type == PAWN && enemy -> additional.firstMove == 1)
-                    FunctionSuccess
+                    FUNCTION_SUCCESS
         }
     }
 
-    IllegalMove
+    ILLEGAL_MOVE
 }
 
 int validateKnight(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     struct piece* piece = data -> currentPiece;
 
     if(piece -> position.x + 1 == newPosition.x || piece -> position.x - 1 == newPosition.x)
         if(piece -> position.y + 2 == newPosition.y || piece -> position.y - 2 == newPosition.y)
-            FunctionSuccess
+            FUNCTION_SUCCESS
 
     if(piece -> position.y + 1 == newPosition.y || piece -> position.y - 1 == newPosition.y)
         if(piece -> position.x + 2 == newPosition.x || piece -> position.x - 2 == newPosition.x)
-            FunctionSuccess
+            FUNCTION_SUCCESS
 
-    IllegalMove
+    ILLEGAL_MOVE
 }
 
 int validateBishop(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     struct piece* piece = data -> currentPiece;
 
     if(abs(newPosition.x - piece -> position.x) == abs(newPosition.y - piece -> position.y))
-        FunctionSuccess
+        FUNCTION_SUCCESS
 
-    IllegalMove
+    ILLEGAL_MOVE
 }
 
 int validateRook(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     struct piece* piece = data -> currentPiece;
 
     if(piece -> position.x == newPosition.x || piece -> position.y == newPosition.y)
-        FunctionSuccess
+        FUNCTION_SUCCESS
 
-    IllegalMove
+    ILLEGAL_MOVE
 }
 
 int validateQueen(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     struct piece* piece = data -> currentPiece;
 
     if(abs(newPosition.x - piece -> position.x) == abs(newPosition.y - piece -> position.y))
-        FunctionSuccess
+        FUNCTION_SUCCESS
 
     if(piece -> position.x == newPosition.x || piece -> position.y == newPosition.y)
-        FunctionSuccess
+        FUNCTION_SUCCESS
 
-    IllegalMove
+    ILLEGAL_MOVE
 }
 
 int validateKing(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     struct piece* piece = data -> currentPiece;
 
     if(piece -> position.x + 1 == newPosition.x || piece -> position.x - 1 == newPosition.x)
-        FunctionSuccess
+        FUNCTION_SUCCESS
 
     if(piece -> position.y + 1 == newPosition.y || piece -> position.y - 1 == newPosition.y)
-        FunctionSuccess
+        FUNCTION_SUCCESS
 
     piece = searchForPiece(data, newPosition);
 
@@ -551,55 +551,55 @@ int validateKing(struct game* data, struct coordinates newPosition)
         {
             struct coordinates currentPosition = data -> currentPiece -> position;
 
-            if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+            if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
             {
                 if(piece -> position.x > data -> currentPiece -> position.x)
                 {
                     currentPosition.x++;
-                    if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                    if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
                     {
                         currentPosition.x++;
-                        if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
-                            FunctionSuccess
+                        if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                            FUNCTION_SUCCESS
                     }
                 }
                 else if(piece -> position.x < data -> currentPiece -> position.x)
                 {
                     currentPosition.x--;
-                    if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                    if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
                     {
                         currentPosition.x--;
-                        if(isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
-                            FunctionSuccess
+                        if(!isPositionAttacked(data, currentPosition, (piece -> color == WHITE) ? BLACK : WHITE))
+                            FUNCTION_SUCCESS
                     }
                 }
             }
         }
 
-    IllegalMove
+    ILLEGAL_MOVE
 }
 
 int validateInterruption(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(searchForPiece(data, newPosition))
         if(!isEnemy(data, newPosition))
             if(!(data -> currentPiece -> type == KING && searchForPiece(data, newPosition) -> type == ROOK && data -> currentPiece -> additional.canCastle && searchForPiece(data, newPosition) -> additional.canCastle))
-                IllegalMove
+                ILLEGAL_MOVE
 
     if(data -> currentPiece -> type == KNIGHT)
-        FunctionSuccess
+        FUNCTION_SUCCESS
 
     struct coordinates orignalPosition = data -> currentPiece -> position;
     struct coordinates currentPosition = orignalPosition;
@@ -617,34 +617,44 @@ int validateInterruption(struct game* data, struct coordinates newPosition)
             currentPosition.x--;
 
         if(!((memcmp(&(currentPosition), &(newPosition), sizeof(struct coordinates)))))
-            FunctionSuccess
+            FUNCTION_SUCCESS
 
     } while(!searchForPiece(data, currentPosition));
 
-    IllegalMove
+    ILLEGAL_MOVE
 }
 
 int validateKingsCheckHazard(struct game* data, struct coordinates newPosition)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(newPosition.x < 'a' || newPosition.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(newPosition.y < 1 || newPosition.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(searchForPiece(data, newPosition))
         if(searchForPiece(data, newPosition) -> type == KING)
-            IllegalMove
+            ILLEGAL_MOVE
 
     struct piece* piece = data -> currentPiece;
     struct coordinates currentPosition = piece -> position;
     struct piece* enemy = searchForPiece(data, newPosition);
+
+    if(enemy)
+        if(piece -> color == enemy -> color && piece -> type == KING && enemy -> type == ROOK && piece -> additional.canCastle && enemy -> additional.canCastle)
+        {
+            if(enemy -> position.x > piece -> position.x)
+                newPosition.x--;
+            else if(enemy -> position.x < piece -> position.x)
+                newPosition.x += 2;
+            enemy = searchForPiece(data, newPosition);
+        }
 
     int x = newPosition.x - 97;
     int y = 8 - newPosition.y;
@@ -662,7 +672,7 @@ int validateKingsCheckHazard(struct game* data, struct coordinates newPosition)
         y = 8 - newPosition.y;
         *(*(data -> board + y) + x) = enemy;
 
-        IllegalMove
+        ILLEGAL_MOVE
     }
 
     piece -> position = currentPosition;
@@ -671,7 +681,7 @@ int validateKingsCheckHazard(struct game* data, struct coordinates newPosition)
     y = 8 - newPosition.y;
     *(*(data -> board + y) + x) = enemy;
 
-    FunctionSuccess
+    FUNCTION_SUCCESS
 }
 
 struct piece* searchForPiece(struct game* data, struct coordinates position)
@@ -708,19 +718,19 @@ struct piece* searchForPiece(struct game* data, struct coordinates position)
 int isEnemy(struct game* data, struct coordinates position)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(position.x < 'a' || position.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(position.y < 1 || position.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(!searchForPiece(data, position))
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(data -> currentPiece -> color != searchForPiece(data, position) -> color)
         return 1;
@@ -731,16 +741,16 @@ int isEnemy(struct game* data, struct coordinates position)
 int isPositionAttacked(struct game* data, struct coordinates position, enum pieceColor color)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(position.x < 'a' || position.x > 'h')
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     if(position.y < 1 || position.y > 8)
-        FunctionDataError
+        FUNCTION_DATA_ERROR
 
     struct piece *piece;
     struct coordinates piecePosition;
@@ -776,10 +786,10 @@ int isPositionAttacked(struct game* data, struct coordinates position, enum piec
 int lookForCheck(struct game* data, enum pieceColor color)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     struct piece *piece;
     struct coordinates piecePosition;
@@ -805,10 +815,10 @@ int lookForCheck(struct game* data, enum pieceColor color)
 int areThereAnyLegalMovesLeft(struct game* data, enum pieceColor color)
 {
     if(!data)
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     if(!(data -> board) || !(data -> currentPiece))
-        FunctionInputError
+        FUNCTION_INPUT_ERROR
 
     struct piece *piece;
     struct coordinates piecePosition;
@@ -854,44 +864,44 @@ int areThereAnyLegalMovesLeft(struct game* data, enum pieceColor color)
 int userCommunication(struct game* data, enum pieceColor color)
 {
     if(!data)
-        return howItEvenHappened;
+        return HOW_IT_EVEN_HAPPENED;
 
     if(!(data -> board))
-        return howItEvenHappened;
+        return HOW_IT_EVEN_HAPPENED;
 
     struct coordinates originalPosition, newPosition;
 
     if(scanf(" %c%hhu %c%hhu", &originalPosition.x, &originalPosition.y, &newPosition.x, &newPosition.y) != 4)
-        return userIncorrectInput;
+        return USER_INCORRECT_INPUT;
 
     if(originalPosition.x == 'x' && originalPosition.y == 0 && newPosition.x == 'x' && newPosition.y == 0)
-        return gameEnd;
+        return GAME_END;
 
     if(originalPosition.x < 'a' || originalPosition.x > 'h' || newPosition.x < 'a' || newPosition.x > 'h')
-        return userIncorrectInputData;
+        return USER_INCORRECT_INPUT_DATA;
 
     if(originalPosition.y < 1 || originalPosition.y > 8 || newPosition.y < 1 || newPosition.y > 8)
-        return userIncorrectInputData;
+        return USER_INCORRECT_INPUT_DATA;
 
     data -> currentPiece = searchForPiece(data, originalPosition);
     if(!(data -> currentPiece))
-        return pieceDoesntExist;
+        return PIECE_DOES_NOT_EXIST;
 
     if(data -> currentPiece -> color != color)
-        return pieceDoesntBelongToUser;
+        return PIECE_DOES_NOT_BELONG_TO_USER;
 
     if(move(data, newPosition))
-        return illegalMove;
+        return MOVE_IS_ILLEGAL;
 
     if(!areThereAnyLegalMovesLeft(data, (data -> currentPiece -> color == WHITE) ? BLACK : WHITE))
     {
         if(lookForCheck(data, (data -> currentPiece -> color == WHITE) ? BLACK : WHITE))
-            return checkmate;
-        return stalemate;
+            return CHECKMATE;
+        return STALEMATE;
     }
 
     if(lookForCheck(data, (data -> currentPiece -> color == WHITE) ? BLACK : WHITE))
-        return kingInCheck;
+        return KING_IS_IN_CHECK;
 
-    return userSuccessfulMove;
+    return USER_SUCCESSFUL_MOVE;
 }
